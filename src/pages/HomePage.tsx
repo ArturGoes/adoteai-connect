@@ -40,24 +40,6 @@ const HomePage = () => {
                 Saiba Mais
               </Button>
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-12 max-w-2xl mx-auto">
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">500+</div>
-                <div className="text-sm text-gray-text">Animais adotados</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-secondary mb-2">
-                  1000+
-                </div>
-                <div className="text-sm text-gray-text">Famílias felizes</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-accent mb-2">20+</div>
-                <div className="text-sm text-gray-text">Abrigos parceiros</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
