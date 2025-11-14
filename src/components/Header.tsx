@@ -18,6 +18,9 @@ const Header = () => {
             <Link to="/" className="text-foreground hover:text-primary transition-colors font-medium">
               Início
             </Link>
+            <Link to="/buscar" className="text-foreground hover:text-primary transition-colors font-medium">
+              Buscar
+            </Link>
             <Link to="/favoritos" className="text-foreground hover:text-primary transition-colors font-medium">
               Favoritos
             </Link>
