@@ -115,10 +115,6 @@ const SobrePage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl">
-                <div className="text-4xl font-bold">1000+</div>
-                <div className="text-sm opacity-90">Animais cadastrados</div>
-              </div>
             </div>
           </div>
         </div>

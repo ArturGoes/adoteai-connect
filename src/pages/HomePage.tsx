@@ -36,9 +36,11 @@ const HomePage = () => {
               >
                 Ver Animais Disponíveis
               </Button>
-              <Button variant="secondary">
-                Saiba Mais
-              </Button>
+              <Link to="/sobre">
+                <Button variant="secondary">
+                  Saiba Mais
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

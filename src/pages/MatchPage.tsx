@@ -34,22 +34,25 @@ const MatchPage = () => {
 
     try {
       const response = await matchApi.findMatch({
-        espacoEmCasa,
-        tempoDisponivel,
-        preferenciaTemperamento: parseInt(preferenciaTemperamento),
+        espacoEmCasa: parseFloat(espacoEmCasa.toString()),
+        tempoDisponivel: parseFloat(tempoDisponivel.toString()),
+        preferenciaTemperamento: parseInt(preferenciaTemperamento, 10),
       });
       
       if (response.success) {
         setResult(response);
       } else {
-        setError("Não foi possível encontrar um match. Tente novamente.");
+        setError("Não encontramos um match perfeito, mas mostramos o animal mais compatível com seu perfil.");
+        if (response.animal) {
+          setResult(response);
+        }
       }
     } catch (err: any) {
       const message = err.response?.data?.message || "Erro ao conectar com o servidor. Verifique se o backend está rodando.";
       setError(message);
       toast({
-        title: "Erro",
-        description: message,
+        title: "Erro no Match",
+        description: "Não foi possível processar sua solicitação. " + message,
         variant: "destructive",
       });
     } finally {

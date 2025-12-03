@@ -15,6 +15,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import MatchPage from "./pages/MatchPage";
 import LoginPage from "./pages/LoginPage";
 import SobrePage from "./pages/SobrePage";
+import AdoptionContractPage from "./pages/AdoptionContractPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
                   <Route path="/encontre-seu-match" element={<MatchPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/sobre" element={<SobrePage />} />
+                  <Route path="/adotar/contrato/:id" element={<AdoptionContractPage />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

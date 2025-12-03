@@ -1,10 +1,17 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, MapPin, Heart, Home, Check, Syringe, AlertTriangle, CheckCircle } from "lucide-react";
 import { mockAnimals } from "@/data/mockAnimals";
 import Button from "@/components/Button";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Extended animal type with vaccine fields (matching backend)
 interface AnimalExtended {
@@ -19,20 +26,31 @@ interface AnimalExtended {
   larIdeal: string;
   imagemUrl: string;
   disponivel: boolean;
+  fotos?: string[];
   vacinasTomadas?: string[];
   vacinasPendentes?: string[];
 }
 
+// Generate Unsplash URLs based on breed
+const generateUnsplashPhotos = (breed: string, count: number = 4): string[] => {
+  const encodedBreed = encodeURIComponent(breed.toLowerCase().replace(/\s+/g, ','));
+  return Array.from({ length: count }, (_, i) => 
+    `https://source.unsplash.com/800x600/?${encodedBreed},dog&sig=${i}`
+  );
+};
+
 const AnimalProfilePage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
 
   // For now using mock data - in production would fetch from API
   const baseAnimal = mockAnimals.find((a) => a.id === Number(id));
   
-  // Add mock vaccine data for demonstration
+  // Add mock vaccine data and generate photos
   const animal: AnimalExtended | undefined = baseAnimal ? {
     ...baseAnimal,
+    fotos: baseAnimal.imagemUrl ? [baseAnimal.imagemUrl, ...generateUnsplashPhotos(baseAnimal.raça, 3)] : generateUnsplashPhotos(baseAnimal.raça, 4),
     vacinasTomadas: ["Raiva", "V10 (Polivalente)", "Giárdia", "Gripe Canina"],
     vacinasPendentes: ["Leishmaniose", "Reforço V10"],
   } : undefined;
@@ -56,13 +74,20 @@ const AnimalProfilePage = () => {
   }
 
   const favorite = isFavorite(animal.id);
+  const photos = animal.fotos && animal.fotos.length > 0 
+    ? animal.fotos 
+    : generateUnsplashPhotos(animal.raça);
+
+  const handleAdoptClick = () => {
+    navigate(`/adotar/contrato/${animal.id}`);
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Back Button */}
         <Link
-          to="/buscar"
+          to="/animais"
           className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -70,18 +95,28 @@ const AnimalProfilePage = () => {
         </Link>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Image */}
+          {/* Image Carousel */}
           <div className="relative">
-            <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
-              <img
-                src={animal.imagemUrl}
-                alt={animal.nome}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <Carousel className="w-full">
+              <CarouselContent>
+                {photos.map((photo, index) => (
+                  <CarouselItem key={index}>
+                    <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
+                      <img
+                        src={photo}
+                        alt={`${animal.nome} - Foto ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-4 bg-card/80 backdrop-blur-sm hover:bg-card" />
+              <CarouselNext className="right-4 bg-card/80 backdrop-blur-sm hover:bg-card" />
+            </Carousel>
 
             {/* Status Tag */}
-            <div className="absolute top-4 left-4">
+            <div className="absolute top-4 left-4 z-10">
               {animal.disponivel ? (
                 <div className="flex items-center gap-2 bg-success text-success-foreground px-4 py-2 rounded-full font-semibold shadow-lg">
                   <Check className="w-4 h-4" />
@@ -99,7 +134,7 @@ const AnimalProfilePage = () => {
             {animal.disponivel && (
               <button
                 onClick={() => toggleFavorite(animal.id)}
-                className="absolute top-4 right-4 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all"
+                className="absolute top-4 right-4 z-10 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all"
               >
                 <Heart
                   className={`w-6 h-6 ${
@@ -108,6 +143,16 @@ const AnimalProfilePage = () => {
                 />
               </button>
             )}
+
+            {/* Photo indicators */}
+            <div className="flex justify-center gap-2 mt-4">
+              {photos.map((_, index) => (
+                <div
+                  key={index}
+                  className="w-2 h-2 rounded-full bg-muted"
+                />
+              ))}
+            </div>
           </div>
 
           {/* Info */}
@@ -254,6 +299,7 @@ const AnimalProfilePage = () => {
                 variant="primary"
                 disabled={!animal.disponivel}
                 className="w-full text-lg py-4"
+                onClick={handleAdoptClick}
               >
                 {animal.disponivel ? "Quero Adotar!" : "Já encontrou um lar!"}
               </Button>
